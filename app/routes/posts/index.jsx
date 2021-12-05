@@ -1,5 +1,5 @@
 import { useLoaderData } from "remix";
-import { getSession } from "~/utils/sessions.server";
+import { getTasks } from "~/modules/tasks";
 
 /**
  * This is a brief example on how to use remix with an external API
@@ -7,31 +7,15 @@ import { getSession } from "~/utils/sessions.server";
  * In this particular file we have a loader function which in our server (express)
  */
 export const loader = async ({ request }) => {
-  const session = await getSession(
-    request.headers.get("Cookie")
-  );
-
-  const token = session.get("token");
-
-  const response = await fetch(
-    "https://rios-task-manager.herokuapp.com/tasks?limit=10&skip=0",
-    {
-      headers: new Headers({
-        Authorization: `Bearer ${token}`,
-      }),
-    }
-  );
-
-  return response.json();
+  return getTasks(request);
 };
-
 
 /**
  * This is the component that is going to be rendered, I still don't know the mechanics here but
  * it will receive data within the userLoaderData() hook, in this case it happens to be calling
  * an external API, but like I mentioned in the comment above, remix by itself is a fullstack framework
  */
-export default function posts() {
+export default function posts(props) {
   const tasks = useLoaderData();
 
   return (
